@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/mse.png">
 <meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/g.png">
 <meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/vs.png">
-<meta property="og:updated_time" content="2017-10-12T13:44:21.430Z">
+<meta property="og:updated_time" content="2017-10-12T23:53:52.255Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DehazeNet及其他">
 <meta name="twitter:description" content="简介DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。">
@@ -207,7 +207,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。<br><a id="more"></a><br>单图像去雾处理是一个挑战不利的问题，已有的方法使用不同的约束或者优先级来达到似是而非的去雾效果。图像去雾的难度在于，雾的透射率依赖于雾的深度，而雾的深度在图片中是未知的并且不同位置的雾有不同的深度，而且单张图片的去雾因为有雾区域的判断而尤为艰难。<br>去雾的关键是从输入的有雾图片中估计出图片对应的透射图（medium transmisson map）。而DehazeNet就是一个端对端的可训练的图像去雾系统，使用DehazeNet来估计图片的透射图，使用该透射图对有雾图片逐个像素点恢复，使其恢复成无雾图片。<br>DehazeNet是一个基于深度网络模型的卷积神经网络，其中的层（layers）被特别设计来体现了在图像去雾中既定的假设/先验（assumptions/priors）。其中Maxout层被用来做与雾相关的特征提取。同时，使用一个特别的非线性的激活函数BReLU(bilateral rectified linear unit)来提升恢复图片的质量。   </p>
+        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。<br><a id="more"></a><br>单图像去雾处理是一个挑战不利的问题，已有的方法使用不同的约束或者先验来达到似是而非的去雾效果。图像去雾的难度在于，雾的透射率依赖于雾的深度，而雾的深度在图片中是未知的并且不同位置的雾有不同的深度，而且单张图片的去雾因为有雾区域的判断而尤为艰难。<br>去雾的关键是从输入的有雾图片中估计出图片对应的透射图（medium transmisson map）。而DehazeNet就是一个端对端的可训练的图像去雾系统，使用DehazeNet来估计图片的透射图，使用该透射图对有雾图片逐个像素点恢复，使其恢复成无雾图片。<br>DehazeNet是一个基于深度网络模型的卷积神经网络，其中的层（layers）被特别设计来体现了在图像去雾中既定的假设/先验（assumptions/priors）。其中Maxout层被用来做与雾相关的特征提取。同时，使用一个特别的非线性的激活函数BReLU(bilateral rectified linear unit)来提升恢复图片的质量。   </p>
 <h1 id="相关内容"><a href="#相关内容" class="headerlink" title="相关内容"></a>相关内容</h1><h2 id="大气散射模型（Atmospheric-Scattering-Model）"><a href="#大气散射模型（Atmospheric-Scattering-Model）" class="headerlink" title="大气散射模型（Atmospheric Scattering Model）"></a>大气散射模型（Atmospheric Scattering Model）</h2><p>大气散射模型是McCartney为了描述有雾图片信息提出的模型，后进一步被Narasimhan和Nayar发展得来。该模型可以写为：<br><img src="/2017/10/12/DehazeNet及其他/asm.png" alt="asm.png" title=""><br>其中I(x)是观察到的有雾图片，J(x)是对应的无雾图片，t(x)表示透射率，A表示自然光（此处向量对应多通道图片），x表示有雾图片中的像素。<br>其中J(x)t(x)被称为直接衰减（direct attenuation）,描述了真实画面在介质中的衰减。A(1-t(x))被称为空气光(airlight)，表示因散射光引起的场景颜色变化。<br>大气是同质时，t可以被表示为<br><img src="/2017/10/12/DehazeNet及其他/t.png" alt="t.png" title=""><br>其中β表示大气散射系数，d(x)表示场景到相机的距离。显然，当d(x)趋于无穷时，t(x)接近于零，此时A等于I(x)。但是，在实际的照片中距离不可能趋近于无穷，而是一个很远的距离，此时的透射率为一个很小的只t0。此时，可以求出较为稳定的α，即自然光。表示如下：<br><img src="/2017/10/12/DehazeNet及其他/a.png" alt="a.png" title="">  </p>
 <h2 id="与雾相关的特征（Haze-Relevant-Features）"><a href="#与雾相关的特征（Haze-Relevant-Features）" class="headerlink" title="与雾相关的特征（Haze-Relevant Features）"></a>与雾相关的特征（Haze-Relevant Features）</h2><p>基于经验观察，已存的去雾方法使用了不同的假设或先验来计算与雾相关的特征。然后通过这些特征来达到去雾的效果。  </p>
 <h4 id="暗通道（Dark-Channel）"><a href="#暗通道（Dark-Channel）" class="headerlink" title="暗通道（Dark Channel）"></a>暗通道（Dark Channel）</h4><p>暗通道先验是基于室外图片的经验观察得来的。在大多数室外无雾图片中，至少存在一个颜色通道其中的某些像素的强度值很多低，甚至接近于零。表示如下：<br><img src="/2017/10/12/DehazeNet及其他/dc.png" alt="dc.png" title=""><br>其中Jc是J的一个颜色通道（RGB），Ω(x)表示以x为中心的一块区域。<br>暗通道特征可以直接用来估计透射率 t(x) 正相关于 1-Jdark(x)。  </p>
