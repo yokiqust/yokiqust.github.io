@@ -31,7 +31,9 @@
 <meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/le.png">
 <meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/brelu.png">
 <meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/mse.png">
-<meta property="og:updated_time" content="2017-10-12T13:22:51.478Z">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/g.png">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/vs.png">
+<meta property="og:updated_time" content="2017-10-12T13:44:21.430Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DehazeNet及其他">
 <meta name="twitter:description" content="简介DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。">
@@ -217,9 +219,11 @@
 <h4 id="多尺度映射"><a href="#多尺度映射" class="headerlink" title="多尺度映射"></a>多尺度映射</h4><p>多尺度特征已经在去雾中被证明有效。比如在GoogleNet中的inception结构中，并行的使用不同的卷积核进行卷积，能更好的定位输入图片中的边缘对象。在DehazeNet中使用三组卷积核：3x3,5x5,7x7，每种卷积核使用相同的数量进行卷积。所以第二层结构为：<br><img src="/2017/10/12/DehazeNet及其他/msm.png" alt="msm.png" title="">  </p>
 <h4 id="局部极值"><a href="#局部极值" class="headerlink" title="局部极值"></a>局部极值</h4><p>在卷积神经网络的经典结构中，通过考虑每个像素邻域的最大值来克服局部敏感度。此外，基于区域透射率是不变这个假设，局部极值可以克服透射率估计的噪音。DehazeNet第三层：<br><img src="/2017/10/12/DehazeNet及其他/le.png" alt="le.png" title=""><br>与卷积神经网络中的最大池化相比，局部极值可以保证图片的分辨率。  </p>
 <h4 id="非线性回归"><a href="#非线性回归" class="headerlink" title="非线性回归"></a>非线性回归</h4><p>一般的分线性回归激活函数包括Sigmoid和ReLU。其中Sigmoid很容易造成梯度消失，从而使网络收敛很慢，或者取得很差的局部最优解。而ReLU被设计用来解决分类问题，不能很好的应用于回归问题。特别是ReLU当数值小于0时才会抑制数值，这就很容易导致DehazeNet最后一层的溢出（因为透射率在0与1之间）。<br>因此，在DehazeNet中使用了BReLU，图像如下：<br><img src="/2017/10/12/DehazeNet及其他/brelu.png" alt="brelu.png" title=""><br>这样就将透射率t限制在tmin与tmax之间，同时又防止了梯度消失。  </p>
-<h2 id="与传统去雾算法的联系"><a href="#与传统去雾算法的联系" class="headerlink" title="与传统去雾算法的联系"></a>与传统去雾算法的联系</h2><p>在DehazeNet的第一层中，使用卷积来实现特征提取。比如暗通道特征，因为是去通道中的最小值，而激活函数是Maxout，是取最大值，则如果卷积核是反向卷积核（中间的值为-1，其余值为0）则就会取到最小值，实现提取暗通道特征。<br>当卷积中使用全通卷积核和反向卷积核就会得到最大特征图和最小特征图，此时就可以将RGB色彩空间转换到HSV色彩空间（两个色彩空间的转换使用到了最大值和最小值），然后就可以将颜色衰减特征和色差特征提取。<br>照片中的白色物体与浓雾区域非常相似，通常都有高亮度值和低饱和度。在大多数雾估计模型中都把白色物体看的很远，导致透射率估计不准确。基于区域景深不变的假设，局部极值克服了这一问题。  </p>
+<h2 id="与传统去雾算法的联系"><a href="#与传统去雾算法的联系" class="headerlink" title="与传统去雾算法的联系"></a>与传统去雾算法的联系</h2><p>在DehazeNet的第一层中，使用卷积来实现特征提取。比如暗通道特征，因为是去通道中的最小值，而激活函数是Maxout，是取最大值，则如果卷积核是反向卷积核（中间的值为-1，其余值为0）则就会取到最小值，实现提取暗通道特征。<br>当卷积中使用全通卷积核和反向卷积核就会得到最大特征图和最小特征图，此时就可以将RGB色彩空间转换到HSV色彩空间（两个色彩空间的转换使用到了最大值和最小值），然后就可以将颜色衰减特征和色差特征提取。<br>照片中的白色物体与浓雾区域非常相似，通常都有高亮度值和低饱和度。在大多数雾估计模型中都把白色物体看的很远，导致透射率估计不准确。基于区域景深不变的假设，局部极值克服了这一问题。<br>自然光的估计是根据雾最强的地方，反光最强这个特性。在暗通道优先的方法中，在暗通道中选前0.1%最亮的像素，这些最亮的点就是雾最浓的点，在这些像素中取强度最高的像素，选这个像素作为自然光。根据此方法，在DehazeNet中，取透射率最低的前0.1%的点，因为雾最浓的地方，透射率最低，然后将这些点映射到灰度图上，因为灰度图的像素点可以直接表示光的强度，从灰度图上去最亮的像素作为自然光。</p>
 <h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><h4 id="训练数据"><a href="#训练数据" class="headerlink" title="训练数据"></a>训练数据</h4><p>在去雾训练中很难收集到有雾和无雾的对应的照片。所以在DehazeNet中使用合成的照片进行训练。照片的合成基于两个假设：1,照片内容是透射率独立的，即相同的照片可以显示任意的透射率。2，透射率在一定区域内是不变的。照片合成后从这些照片中随机采样，每个样例都是16x16。  </p>
 <h4 id="训练方法"><a href="#训练方法" class="headerlink" title="训练方法"></a>训练方法</h4><p>在DehazeNet中，监督学习是为了获得RGB图片与透射率之间的映射关系，使用均方误差作为损失函数：<br><img src="/2017/10/12/DehazeNet及其他/mse.png" alt="mse.png" title="">  </p>
+<h2 id="导向滤波"><a href="#导向滤波" class="headerlink" title="导向滤波"></a>导向滤波</h2><p>使用导向滤波算法精细化透射率图，因为DehazeNet得到的透射率图中的像素点为该区域的透射率，使用导向滤波计算出每个像素点的透射率。<br><img src="/2017/10/12/DehazeNet及其他/g.png" alt="g.png" title="">  </p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><img src="/2017/10/12/DehazeNet及其他/vs.png" alt="vs.png" title="">  
 
       
 
