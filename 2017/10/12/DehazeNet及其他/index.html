@@ -6,17 +6,21 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://yokiqust.me">
-  <title>Archives | Thinking &amp; Coding</title>
+  <title>DehazeNet及其他 | Thinking &amp; Coding</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Machine Learning">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Thinking &amp; Coding">
-<meta property="og:url" content="https://yokiqust.me/archives/index.html">
+  <meta name="description" content="简介DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。单图像去雾处理是一个挑战不利的问题，已有的方法使用不同的约束或者优先级来达到似是而非的去雾效果。图像去雾的难度在于，雾的透射率依赖于雾的深度，而雾的深度在图片中是未知的并且不同位置的雾有不同的深度，而且单张图片的去雾因为有雾区域的判断而尤为艰难。去雾的关键是从输入的有雾图片中估计出图片对应的透射图（medium tran">
+<meta name="keywords" content="机器学习,图像处理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DehazeNet及其他">
+<meta property="og:url" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/index.html">
 <meta property="og:site_name" content="Thinking &amp; Coding">
-<meta property="og:description" content="Machine Learning">
+<meta property="og:description" content="简介DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。单图像去雾处理是一个挑战不利的问题，已有的方法使用不同的约束或者优先级来达到似是而非的去雾效果。图像去雾的难度在于，雾的透射率依赖于雾的深度，而雾的深度在图片中是未知的并且不同位置的雾有不同的深度，而且单张图片的去雾因为有雾区域的判断而尤为艰难。去雾的关键是从输入的有雾图片中估计出图片对应的透射图（medium tran">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/asm.png">
+<meta property="og:updated_time" content="2017-10-12T10:21:01.615Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Thinking &amp; Coding">
-<meta name="twitter:description" content="Machine Learning">
+<meta name="twitter:title" content="DehazeNet及其他">
+<meta name="twitter:description" content="简介DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。单图像去雾处理是一个挑战不利的问题，已有的方法使用不同的约束或者优先级来达到似是而非的去雾效果。图像去雾的难度在于，雾的透射率依赖于雾的深度，而雾的深度在图片中是未知的并且不同位置的雾有不同的深度，而且单张图片的去雾因为有雾区域的判断而尤为艰难。去雾的关键是从输入的有雾图片中估计出图片对应的透射图（medium tran">
+<meta name="twitter:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/asm.png">
   
     <link rel="alternative" href="/atom.xml" title="Thinking &amp; Coding" type="application/atom+xml">
   
@@ -166,36 +170,57 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-DehazeNet及其他" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/10/12/DehazeNet及其他/" class="archive-article-date">
-  	<time datetime="2017-10-12T08:45:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-10-12</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/10/12/DehazeNet及其他/">DehazeNet及其他</a>
+    <h1 class="article-title" itemprop="name">
+      DehazeNet及其他
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2017/10/12/DehazeNet及其他/" class="archive-article-date">
+  	<time datetime="2017-10-12T08:45:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-10-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。<br>单图像去雾处理是一个挑战不利的问题，已有的方法使用不同的约束或者优先级来达到似是而非的去雾效果。图像去雾的难度在于，雾的透射率依赖于雾的深度，而雾的深度在图片中是未知的并且不同位置的雾有不同的深度，而且单张图片的去雾因为有雾区域的判断而尤为艰难。<br>去雾的关键是从输入的有雾图片中估计出图片对应的透射图（medium transmisson map）。而DehazeNet就是一个端对端的可训练的图像去雾系统，使用DehazeNet来估计图片的透射图，使用该透射图对有雾图片逐个像素点恢复，使其恢复成无雾图片。<br>DehazeNet是一个基于深度网络模型的卷积神经网络，其中的层（layers）被特别设计来体现了在图像去雾中既定的假设/先验（assumptions/priors）。其中Maxout层被用来做与雾相关的特征提取。同时，使用一个特别的非线性的激活函数BReLU(bilateral rectified linear unit)来提升恢复图片的质量。   </p>
+<h1 id="相关内容"><a href="#相关内容" class="headerlink" title="相关内容"></a>相关内容</h1><h2 id="大气散射模型（Atmospheric-Scattering-Model）"><a href="#大气散射模型（Atmospheric-Scattering-Model）" class="headerlink" title="大气散射模型（Atmospheric Scattering Model）"></a>大气散射模型（Atmospheric Scattering Model）</h2><p>大气散射模型是McCartney为了描述有雾图片信息提出的模型，后进一步被Narasimhan和Nayar发展得来。该模型可以写为：<br><img src="/2017/10/12/DehazeNet及其他/asm.png" alt="asm.png" title=""></p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -211,7 +236,7 @@
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -224,71 +249,87 @@
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=https://yokiqust.me/2017/10/12/DehazeNet及其他/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/05/11/hello-world/" class="archive-article-date">
-  	<time datetime="2017-05-11T08:51:45.384Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-11</time>
-</a>
-        </div>
-    	 
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/05/11/hello-world/">Hello World</a>
-    </h1>
+  
+    <a href="/2017/05/11/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Hello World</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+
+  
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/05/11/HelloWorld/" class="archive-article-date">
-  	<time datetime="2017-05-11T06:42:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-11</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/05/11/HelloWorld/">HelloWorld</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -311,8 +352,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
