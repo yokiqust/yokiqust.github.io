@@ -188,9 +188,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。<br>单图像去雾处理是一个挑战不利的问题，已有的方法使用不同的约束或者优先级来达到似是而非的去雾效果。图像去雾的难度在于，雾的透射率依赖于雾的深度，而雾的深度在图片中是未知的并且不同位置的雾有不同的深度，而且单张图片的去雾因为有雾区域的判断而尤为艰难。<br>去雾的关键是从输入的有雾图片中估计出图片对应的透射图（medium transmisson map）。而DehazeNet就是一个端对端的可训练的图像去雾系统，使用DehazeNet来估计图片的透射图，使用该透射图对有雾图片逐个像素点恢复，使其恢复成无雾图片。<br>DehazeNet是一个基于深度网络模型的卷积神经网络，其中的层（layers）被特别设计来体现了在图像去雾中既定的假设/先验（assumptions/priors）。其中Maxout层被用来做与雾相关的特征提取。同时，使用一个特别的非线性的激活函数BReLU(bilateral rectified linear unit)来提升恢复图片的质量。   </p>
-<h1 id="相关内容"><a href="#相关内容" class="headerlink" title="相关内容"></a>相关内容</h1><h2 id="大气散射模型（Atmospheric-Scattering-Model）"><a href="#大气散射模型（Atmospheric-Scattering-Model）" class="headerlink" title="大气散射模型（Atmospheric Scattering Model）"></a>大气散射模型（Atmospheric Scattering Model）</h2><p>大气散射模型是McCartney为了描述有雾图片信息提出的模型，后进一步被Narasimhan和Nayar发展得来。该模型可以写为：<br><img src="/2017/10/12/DehazeNet及其他/asm.png" alt="asm.png" title=""></p>
-
+        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。<br>
+        
+          <a class="article-more-a" href="/2017/10/12/DehazeNet及其他/#more">more >></a>
+        
       
 
       

@@ -8,18 +8,33 @@
   <link rel="dns-prefetch" href="https://yokiqust.me">
   <title>DehazeNet及其他 | Thinking &amp; Coding</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="简介DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。单图像去雾处理是一个挑战不利的问题，已有的方法使用不同的约束或者优先级来达到似是而非的去雾效果。图像去雾的难度在于，雾的透射率依赖于雾的深度，而雾的深度在图片中是未知的并且不同位置的雾有不同的深度，而且单张图片的去雾因为有雾区域的判断而尤为艰难。去雾的关键是从输入的有雾图片中估计出图片对应的透射图（medium tran">
+  <meta name="description" content="简介DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。">
 <meta name="keywords" content="机器学习,图像处理">
 <meta property="og:type" content="article">
 <meta property="og:title" content="DehazeNet及其他">
 <meta property="og:url" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/index.html">
 <meta property="og:site_name" content="Thinking &amp; Coding">
-<meta property="og:description" content="简介DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。单图像去雾处理是一个挑战不利的问题，已有的方法使用不同的约束或者优先级来达到似是而非的去雾效果。图像去雾的难度在于，雾的透射率依赖于雾的深度，而雾的深度在图片中是未知的并且不同位置的雾有不同的深度，而且单张图片的去雾因为有雾区域的判断而尤为艰难。去雾的关键是从输入的有雾图片中估计出图片对应的透射图（medium tran">
+<meta property="og:description" content="简介DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。">
 <meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/asm.png">
-<meta property="og:updated_time" content="2017-10-12T10:21:01.615Z">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/t.png">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/a.png">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/dc.png">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/v.png">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/ca.png">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/si.png">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/hd.png">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/net.png">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/maxout.png">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/maxout2.png">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/maxout3.png">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/msm.png">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/le.png">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/brelu.png">
+<meta property="og:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/mse.png">
+<meta property="og:updated_time" content="2017-10-12T13:22:51.478Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DehazeNet及其他">
-<meta name="twitter:description" content="简介DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。单图像去雾处理是一个挑战不利的问题，已有的方法使用不同的约束或者优先级来达到似是而非的去雾效果。图像去雾的难度在于，雾的透射率依赖于雾的深度，而雾的深度在图片中是未知的并且不同位置的雾有不同的深度，而且单张图片的去雾因为有雾区域的判断而尤为艰难。去雾的关键是从输入的有雾图片中估计出图片对应的透射图（medium tran">
+<meta name="twitter:description" content="简介DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。">
 <meta name="twitter:image" content="https://yokiqust.me/2017/10/12/DehazeNet及其他/asm.png">
   
     <link rel="alternative" href="/atom.xml" title="Thinking &amp; Coding" type="application/atom+xml">
@@ -190,8 +205,21 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。<br>单图像去雾处理是一个挑战不利的问题，已有的方法使用不同的约束或者优先级来达到似是而非的去雾效果。图像去雾的难度在于，雾的透射率依赖于雾的深度，而雾的深度在图片中是未知的并且不同位置的雾有不同的深度，而且单张图片的去雾因为有雾区域的判断而尤为艰难。<br>去雾的关键是从输入的有雾图片中估计出图片对应的透射图（medium transmisson map）。而DehazeNet就是一个端对端的可训练的图像去雾系统，使用DehazeNet来估计图片的透射图，使用该透射图对有雾图片逐个像素点恢复，使其恢复成无雾图片。<br>DehazeNet是一个基于深度网络模型的卷积神经网络，其中的层（layers）被特别设计来体现了在图像去雾中既定的假设/先验（assumptions/priors）。其中Maxout层被用来做与雾相关的特征提取。同时，使用一个特别的非线性的激活函数BReLU(bilateral rectified linear unit)来提升恢复图片的质量。   </p>
-<h1 id="相关内容"><a href="#相关内容" class="headerlink" title="相关内容"></a>相关内容</h1><h2 id="大气散射模型（Atmospheric-Scattering-Model）"><a href="#大气散射模型（Atmospheric-Scattering-Model）" class="headerlink" title="大气散射模型（Atmospheric Scattering Model）"></a>大气散射模型（Atmospheric Scattering Model）</h2><p>大气散射模型是McCartney为了描述有雾图片信息提出的模型，后进一步被Narasimhan和Nayar发展得来。该模型可以写为：<br><img src="/2017/10/12/DehazeNet及其他/asm.png" alt="asm.png" title=""></p>
+        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。<br><a id="more"></a><br>单图像去雾处理是一个挑战不利的问题，已有的方法使用不同的约束或者优先级来达到似是而非的去雾效果。图像去雾的难度在于，雾的透射率依赖于雾的深度，而雾的深度在图片中是未知的并且不同位置的雾有不同的深度，而且单张图片的去雾因为有雾区域的判断而尤为艰难。<br>去雾的关键是从输入的有雾图片中估计出图片对应的透射图（medium transmisson map）。而DehazeNet就是一个端对端的可训练的图像去雾系统，使用DehazeNet来估计图片的透射图，使用该透射图对有雾图片逐个像素点恢复，使其恢复成无雾图片。<br>DehazeNet是一个基于深度网络模型的卷积神经网络，其中的层（layers）被特别设计来体现了在图像去雾中既定的假设/先验（assumptions/priors）。其中Maxout层被用来做与雾相关的特征提取。同时，使用一个特别的非线性的激活函数BReLU(bilateral rectified linear unit)来提升恢复图片的质量。   </p>
+<h1 id="相关内容"><a href="#相关内容" class="headerlink" title="相关内容"></a>相关内容</h1><h2 id="大气散射模型（Atmospheric-Scattering-Model）"><a href="#大气散射模型（Atmospheric-Scattering-Model）" class="headerlink" title="大气散射模型（Atmospheric Scattering Model）"></a>大气散射模型（Atmospheric Scattering Model）</h2><p>大气散射模型是McCartney为了描述有雾图片信息提出的模型，后进一步被Narasimhan和Nayar发展得来。该模型可以写为：<br><img src="/2017/10/12/DehazeNet及其他/asm.png" alt="asm.png" title=""><br>其中I(x)是观察到的有雾图片，J(x)是对应的无雾图片，t(x)表示透射率，A表示自然光（此处向量对应多通道图片），x表示有雾图片中的像素。<br>其中J(x)t(x)被称为直接衰减（direct attenuation）,描述了真实画面在介质中的衰减。A(1-t(x))被称为空气光(airlight)，表示因散射光引起的场景颜色变化。<br>大气是同质时，t可以被表示为<br><img src="/2017/10/12/DehazeNet及其他/t.png" alt="t.png" title=""><br>其中β表示大气散射系数，d(x)表示场景到相机的距离。显然，当d(x)趋于无穷时，t(x)接近于零，此时A等于I(x)。但是，在实际的照片中距离不可能趋近于无穷，而是一个很远的距离，此时的透射率为一个很小的只t0。此时，可以求出较为稳定的α，即自然光。表示如下：<br><img src="/2017/10/12/DehazeNet及其他/a.png" alt="a.png" title="">  </p>
+<h2 id="与雾相关的特征（Haze-Relevant-Features）"><a href="#与雾相关的特征（Haze-Relevant-Features）" class="headerlink" title="与雾相关的特征（Haze-Relevant Features）"></a>与雾相关的特征（Haze-Relevant Features）</h2><p>基于经验观察，已存的去雾方法使用了不同的假设或先验来计算与雾相关的特征。然后通过这些特征来达到去雾的效果。  </p>
+<h4 id="暗通道（Dark-Channel）"><a href="#暗通道（Dark-Channel）" class="headerlink" title="暗通道（Dark Channel）"></a>暗通道（Dark Channel）</h4><p>暗通道先验是基于室外图片的经验观察得来的。在大多数室外无雾图片中，至少存在一个颜色通道其中的某些像素的强度值很多低，甚至接近于零。表示如下：<br><img src="/2017/10/12/DehazeNet及其他/dc.png" alt="dc.png" title=""><br>其中Jc是J的一个颜色通道（RGB），Ω(x)表示以x为中心的一块区域。<br>暗通道特征可以直接用来估计透射率 t(x) 正相关于 1-Jdark(x)。  </p>
+<h4 id="最大对比度（Maximumm-Contrast）"><a href="#最大对比度（Maximumm-Contrast）" class="headerlink" title="最大对比度（Maximumm Contrast）"></a>最大对比度（Maximumm Contrast）</h4><p>因为大气散射，图片的对比度会随着图片的可见度的减小而减小：<br><img src="/2017/10/12/DehazeNet及其他/v.png" alt="v.png" title=""><br>梯度的和表示图片的清晰度，此时t<1。基于这个发现： <img="" src="/2017/10/12/DehazeNet及其他/c.png" alt="c.png" title=""><br>C(x)表示在rxr的区域中的局部对比度最大值。显然对比度特征与透射率之间存在联系，所以图片可以通过最大化对比度来提高可见度。  </1。基于这个发现：></p>
+<h4 id="颜色衰减（Color-Attenuation）"><a href="#颜色衰减（Color-Attenuation）" class="headerlink" title="颜色衰减（Color Attenuation）"></a>颜色衰减（Color Attenuation）</h4><p>受到雾的影响，图片的饱和度急剧降低，同时图片的亮度会升高。再根据上面提到的对比度先验，可以根据图片饱和度和亮度的不同来估计雾的浓度：<br><img src="/2017/10/12/DehazeNet及其他/ca.png" alt="ca.png" title=""><br>其中 Iv(x)和Is(x)可以在HSV色彩空间中表示。HSV色彩空间可以通过RGB色彩空间转换获得。<br>颜色衰减特征与d(x)存在正相关关系，也可以用来估计透射率。  </p>
+<h4 id="色差（Hue-Disparity）"><a href="#色差（Hue-Disparity）" class="headerlink" title="色差（Hue Disparity）"></a>色差（Hue Disparity）</h4><p>原图与其半反像（semi-inverse image）之间的色差可以被用来探测是否是雾。其中半反像：<br><img src="/2017/10/12/DehazeNet及其他/si.png" alt="si.png" title=""><br>对于无雾图来说，是三个通道的半反像中的像素值不都是全反的，导致半反像与原图间的巨大色差。所以色差被表示为：<br><img src="/2017/10/12/DehazeNet及其他/hd.png" alt="hd.png" title=""><br>其中h表示HSV色彩空间中的色彩（hue）通道。所以，透射率与色差之间存在负相关关系。  </p>
+<h2 id="DehazeNet的层设计"><a href="#DehazeNet的层设计" class="headerlink" title="DehazeNet的层设计"></a>DehazeNet的层设计</h2><p>DehazeNet由级联的卷积层和池化层组成，同时使用适当的非线性激活函数。结构如下：<br><img src="/2017/10/12/DehazeNet及其他/net.png" alt="net.png" title=""><br>分别为：特征提取，多尺度映射，局部极值，非线性回归。</p>
+<h4 id="特征提取"><a href="#特征提取" class="headerlink" title="特征提取"></a>特征提取</h4><p>因为已存的去雾方法基于不同的假设在图片上密集提取与雾相关的特征，密集提取特征相当于在有雾图片上使用适当的卷积核进行卷积操作，然后进行非线性映射。<br>根据这些与雾相关特征的色彩通道的极端处理，使用Maxout单元来进行非线性映射，用以降低输出维度。Maxout单元是用在卷积神经网络中的简单前向传播非线性激活函数。它会通过对k（在该系统中为4）个仿射特征图进行像素最大化操作来产生一个新的特征图。基于Maxout单元，DehazeNet的第一层设计为：<br><img src="/2017/10/12/DehazeNet及其他/maxout.png" alt="maxout.png" title=""><br>Maxout单元示意如下：<br><img src="/2017/10/12/DehazeNet及其他/maxout2.png" alt="maxout2.png" title=""><br><img src="/2017/10/12/DehazeNet及其他/maxout3.png" alt="maxout3.png" title=""><br>相当于原本卷积之后的输出作为隐隐层。<br>Maxout单元将自动学习与雾相关的特征而不是通过已存方法的启发式方法。  </p>
+<h4 id="多尺度映射"><a href="#多尺度映射" class="headerlink" title="多尺度映射"></a>多尺度映射</h4><p>多尺度特征已经在去雾中被证明有效。比如在GoogleNet中的inception结构中，并行的使用不同的卷积核进行卷积，能更好的定位输入图片中的边缘对象。在DehazeNet中使用三组卷积核：3x3,5x5,7x7，每种卷积核使用相同的数量进行卷积。所以第二层结构为：<br><img src="/2017/10/12/DehazeNet及其他/msm.png" alt="msm.png" title="">  </p>
+<h4 id="局部极值"><a href="#局部极值" class="headerlink" title="局部极值"></a>局部极值</h4><p>在卷积神经网络的经典结构中，通过考虑每个像素邻域的最大值来克服局部敏感度。此外，基于区域透射率是不变这个假设，局部极值可以克服透射率估计的噪音。DehazeNet第三层：<br><img src="/2017/10/12/DehazeNet及其他/le.png" alt="le.png" title=""><br>与卷积神经网络中的最大池化相比，局部极值可以保证图片的分辨率。  </p>
+<h4 id="非线性回归"><a href="#非线性回归" class="headerlink" title="非线性回归"></a>非线性回归</h4><p>一般的分线性回归激活函数包括Sigmoid和ReLU。其中Sigmoid很容易造成梯度消失，从而使网络收敛很慢，或者取得很差的局部最优解。而ReLU被设计用来解决分类问题，不能很好的应用于回归问题。特别是ReLU当数值小于0时才会抑制数值，这就很容易导致DehazeNet最后一层的溢出（因为透射率在0与1之间）。<br>因此，在DehazeNet中使用了BReLU，图像如下：<br><img src="/2017/10/12/DehazeNet及其他/brelu.png" alt="brelu.png" title=""><br>这样就将透射率t限制在tmin与tmax之间，同时又防止了梯度消失。  </p>
+<h2 id="与传统去雾算法的联系"><a href="#与传统去雾算法的联系" class="headerlink" title="与传统去雾算法的联系"></a>与传统去雾算法的联系</h2><p>在DehazeNet的第一层中，使用卷积来实现特征提取。比如暗通道特征，因为是去通道中的最小值，而激活函数是Maxout，是取最大值，则如果卷积核是反向卷积核（中间的值为-1，其余值为0）则就会取到最小值，实现提取暗通道特征。<br>当卷积中使用全通卷积核和反向卷积核就会得到最大特征图和最小特征图，此时就可以将RGB色彩空间转换到HSV色彩空间（两个色彩空间的转换使用到了最大值和最小值），然后就可以将颜色衰减特征和色差特征提取。<br>照片中的白色物体与浓雾区域非常相似，通常都有高亮度值和低饱和度。在大多数雾估计模型中都把白色物体看的很远，导致透射率估计不准确。基于区域景深不变的假设，局部极值克服了这一问题。  </p>
+<h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><h4 id="训练数据"><a href="#训练数据" class="headerlink" title="训练数据"></a>训练数据</h4><p>在去雾训练中很难收集到有雾和无雾的对应的照片。所以在DehazeNet中使用合成的照片进行训练。照片的合成基于两个假设：1,照片内容是透射率独立的，即相同的照片可以显示任意的透射率。2，透射率在一定区域内是不变的。照片合成后从这些照片中随机采样，每个样例都是16x16。  </p>
+<h4 id="训练方法"><a href="#训练方法" class="headerlink" title="训练方法"></a>训练方法</h4><p>在DehazeNet中，监督学习是为了获得RGB图片与透射率之间的映射关系，使用均方误差作为损失函数：<br><img src="/2017/10/12/DehazeNet及其他/mse.png" alt="mse.png" title="">  </p>
 
       
 
