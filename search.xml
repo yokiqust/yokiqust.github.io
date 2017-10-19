@@ -3,6 +3,33 @@
   
     
     <entry>
+      <title><![CDATA[残差网络ResNet]]></title>
+      <url>/2017/10/19/%E6%AE%8B%E5%B7%AE%E7%BD%91%E7%BB%9CResNet/</url>
+      <content type="html"><![CDATA[<h1 id="深度残差学习（Deep-Residual-Learning）"><a href="#深度残差学习（Deep-Residual-Learning）" class="headerlink" title="深度残差学习（Deep Residual Learning）"></a>深度残差学习（Deep Residual Learning）</h1><h2 id="残差学习（Residual-Learning）"><a href="#残差学习（Residual-Learning）" class="headerlink" title="残差学习（Residual Learning）"></a>残差学习（Residual Learning）</h2><p>对于深度卷积神经网络来说，网络的深度对于模型训练的结果来说至关重要，特别是在图像识别领域。那么由此就产生一个问题：简单的堆积层（layer）可以使网络学习的更好吗？<br><a id="more"></a><br>当一个更深的网络能够开始收敛（converging）时，就会暴露一个退化（degradation）问题：随着网络深度的增加，网络的精度会达到饱和，然后精度就会急速降低。而且，这种退化不是由过拟合（overfitting）引起的，继续向一个适当层数的网络中添加层就会导致更高的训练错误，如下图所示。（为什么？）<br><img src="/2017/10/19/残差网络ResNet/1.png" alt="1.png" title=""><br>训练精度的退化表明不是所有系统都是那么容易优化的。而深度参差学习（deep residual learning）框架可以解决这个退化问题。<br>ResNet通过恒等映射（identity mapping）将一个深层网络退化为一个浅层网络，从而获得更高的训练精度。如果假设多层非线性层（nonlinear layers）可以渐进的拟合复杂函数，这就相当于假设多层非线性层就可以渐进的拟合残差函数（residual function）。从<em>学习恒等映射</em>这点来看，期望映射是H(x)，残差映射为F(x)，其中x为网络第一层的输入，此时F(x)=H(x)-x，则期望输出H(x)=F(x)-x。当F(x)=0时，此时的网络就会退化为一个浅层网络，提高了训练的精度，同时，在极端情况下，当恒等映射达到最优时，网络学习F(x)=0比直接学习F(x)=x要简单很多。从<em>学习残差映射</em>这点来说，根据H(x)=F(x)+x，引入残差之后的映射对输出的变化更加敏感，因为恒等映射将输出的相同部分去掉了，由残差映射F(x)表示变化的部分，而灵敏度大则更利于反向传播时对参数的调整。一个残差学习模块如下：<br><img src="/2017/10/19/残差网络ResNet/2.png" alt="2.png" title=""><br>可以看到恒等映射既没有添加额外的参数，也没有增加计算的复杂度。  </p>
+<h2 id="恒等映射（Identity-Mapping）"><a href="#恒等映射（Identity-Mapping）" class="headerlink" title="恒等映射（Identity Mapping）"></a>恒等映射（Identity Mapping）</h2><p>我们将一个构造模块的定义如下：<br><img src="/2017/10/19/残差网络ResNet/3.png" alt="3.png" title=""><br>其中x,y分别表示输入、输出向量。函数F表示要学习的残差映射。F+x的操作被一个快捷连接（shortcut connection）和一个矩阵加法执行。<br>式中x与F必须有相同的维度，如果没有的话，我们可以通过在快接连接上执行一个线性投影（linear projection）Ws来匹配维度：<br><img src="/2017/10/19/残差网络ResNet/4.png" alt="4.png" title=""><br>在实验中已经验证恒等映射足够解决退化问题，所以线性投影只用来匹配维度。<br>在卷积操作中，F+x的操作是作用在两个特征图之间，而且是对应通道间。</p>
+<h1 id="相关工作"><a href="#相关工作" class="headerlink" title="相关工作"></a>相关工作</h1><h2 id="残差表示（Residual-Representations）"><a href="#残差表示（Residual-Representations）" class="headerlink" title="残差表示（Residual Representations）"></a>残差表示（Residual Representations）</h2><p>在图像识别领域，VLAD是一种用残差向量（residual vectors）对字典(dictionary)进行编码的表示方法。Fisher Vector可以被看做是VLAD的概率版本。这两种算法在图像检索和分类领域都是强有力的浅层表示方法。对于向量量化，编码残差向量比编码原向量更加高效。（未完）</p>
+]]></content>
+      
+        <categories>
+            
+            <category> 机器学习 </category>
+            
+            <category> 深度学习 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 机器学习 </tag>
+            
+            <tag> 图像处理 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[DehazeNet及其他]]></title>
       <url>/2017/10/12/DehazeNet%E5%8F%8A%E5%85%B6%E4%BB%96/</url>
       <content type="html"><![CDATA[<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>DehazeNet是一个端对端（End-to-End）的单张图片去雾系统。<br><a id="more"></a><br>单图像去雾处理是一个挑战ill-posed的问题，已有的方法使用不同的约束或者先验来达到似是而非的去雾效果。图像去雾的难度在于，雾的透射率依赖于雾的深度，而雾的深度在图片中是未知的并且不同位置的雾有不同的深度，而且单张图片的去雾因为有雾区域的判断而尤为艰难。<br>去雾的关键是从输入的有雾图片中估计出图片对应的透射图（medium transmisson map）。而DehazeNet就是一个端对端的可训练的图像去雾系统，使用DehazeNet来估计图片的透射图，使用该透射图对有雾图片逐个像素点恢复，使其恢复成无雾图片。<br>DehazeNet是一个基于深度网络模型的卷积神经网络，其中的层（layers）被特别设计来体现了在图像去雾中既定的假设/先验（assumptions/priors）。其中Maxout层被用来做与雾相关的特征提取。同时，使用一个特别的非线性的激活函数BReLU(bilateral rectified linear unit)来提升恢复图片的质量。  </p>
@@ -82,14 +109,14 @@
     </entry>
     
     <entry>
-      <title><![CDATA[tags]]></title>
-      <url>/tags/index.html</url>
+      <title><![CDATA[links]]></title>
+      <url>/links/index.html</url>
       <content type="html"></content>
     </entry>
     
     <entry>
-      <title><![CDATA[links]]></title>
-      <url>/links/index.html</url>
+      <title><![CDATA[tags]]></title>
+      <url>/tags/index.html</url>
       <content type="html"></content>
     </entry>
     

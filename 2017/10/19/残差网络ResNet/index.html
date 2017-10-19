@@ -37,7 +37,7 @@
     
     <title>
         
-            Hello World | 
+            残差网络ResNet | 
         
         Thinking &amp; Coding
     </title>
@@ -48,8 +48,8 @@
     <meta name="format-detection" content="telephone=no"/>
     <meta name="theme-color" content="#0097A7">
     <meta name="author" content="YokiQust">
-    <meta name="description" itemprop="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.">
-    <meta name="keywords" content="null">
+    <meta name="description" itemprop="description" content="深度残差学习（Deep Residual Learning）残差学习（Residual Learning）对于深度卷积神经网络来说，网络的深度对于模型训练的结果来说至关重要，特别是在图像识别领域。那么由此就产生一个问题：简单的堆积层（layer）可以使网络学习的更好吗？">
+    <meta name="keywords" content="null,机器学习,图像处理">
 
     <!-- Import lsloader -->
     <script>(function(){window.lsloader={jsRunSequence:[],jsnamemap:{},cssnamemap:{}};lsloader.removeLS=function(key){try{localStorage.removeItem(key)}catch(e){}};lsloader.setLS=function(key,val){try{localStorage.setItem(key,val)}catch(e){}};lsloader.getLS=function(key){var val="";try{val=localStorage.getItem(key)}catch(e){val=""}return val};versionString="/*"+(window.materialVersion||"unknownVersion")+"*/";lsloader.clean=function(){try{var keys=[];for(var i=0;i<localStorage.length;i++){keys.push(localStorage.key(i))}keys.forEach(function(key){var data=lsloader.getLS(key);if(window.oldVersion){var remove=window.oldVersion.reduce(function(p,c){return p||data.indexOf("/*"+c+"*/")!==-1},false);if(remove){lsloader.removeLS(key)}}})}catch(e){}};lsloader.clean();lsloader.load=function(jsname,jspath,cssonload,isJs){if(typeof cssonload==="boolean"){isJs=cssonload;cssonload=undefined}isJs=isJs||false;cssonload=cssonload||function(){};var code;code=this.getLS(jsname);if(code&&code.indexOf(versionString)===-1){this.removeLS(jsname);this.requestResource(jsname,jspath,cssonload,isJs);return}if(code){var versionNumber=code.split(versionString)[0];if(versionNumber!=jspath){console.log("reload:"+jspath);this.removeLS(jsname);this.requestResource(jsname,jspath,cssonload,isJs);return}code=code.split(versionString)[1];if(isJs){this.jsRunSequence.push({name:jsname,code:code});this.runjs(jspath,jsname,code)}else{document.getElementById(jsname).appendChild(document.createTextNode(code));cssonload()}}else{this.requestResource(jsname,jspath,cssonload,isJs)}};lsloader.requestResource=function(name,path,cssonload,isJs){var that=this;if(isJs){this.iojs(path,name,function(path,name,code){that.setLS(name,path+versionString+code);that.runjs(path,name,code)})}else{this.iocss(path,name,function(code){document.getElementById(name).appendChild(document.createTextNode(code));that.setLS(name,path+versionString+code)},cssonload)}};lsloader.iojs=function(path,jsname,callback){var that=this;that.jsRunSequence.push({name:jsname,code:""});try{var xhr=new XMLHttpRequest;xhr.open("get",path,true);xhr.onreadystatechange=function(){if(xhr.readyState==4){if(xhr.status>=200&&xhr.status<300||xhr.status==304){if(xhr.response!=""){callback(path,jsname,xhr.response);return}}that.jsfallback(path,jsname)}};xhr.send(null)}catch(e){that.jsfallback(path,jsname)}};lsloader.iocss=function(path,jsname,callback,cssonload){var that=this;try{var xhr=new XMLHttpRequest;xhr.open("get",path,true);xhr.onreadystatechange=function(){if(xhr.readyState==4){if(xhr.status>=200&&xhr.status<300||xhr.status==304){if(xhr.response!=""){callback(xhr.response);cssonload();return}}that.cssfallback(path,jsname,cssonload)}};xhr.send(null)}catch(e){that.cssfallback(path,jsname,cssonload)}};lsloader.iofonts=function(path,jsname,callback,cssonload){var that=this;try{var xhr=new XMLHttpRequest;xhr.open("get",path,true);xhr.onreadystatechange=function(){if(xhr.readyState==4){if(xhr.status>=200&&xhr.status<300||xhr.status==304){if(xhr.response!=""){callback(xhr.response);cssonload();return}}that.cssfallback(path,jsname,cssonload)}};xhr.send(null)}catch(e){that.cssfallback(path,jsname,cssonload)}};lsloader.runjs=function(path,name,code){if(!!name&&!!code){for(var k in this.jsRunSequence){if(this.jsRunSequence[k].name==name){this.jsRunSequence[k].code=code}}}if(!!this.jsRunSequence[0]&&!!this.jsRunSequence[0].code&&this.jsRunSequence[0].status!="failed"){var script=document.createElement("script");script.appendChild(document.createTextNode(this.jsRunSequence[0].code));script.type="text/javascript";document.getElementsByTagName("head")[0].appendChild(script);this.jsRunSequence.shift();if(this.jsRunSequence.length>0){this.runjs()}}else if(!!this.jsRunSequence[0]&&this.jsRunSequence[0].status=="failed"){var that=this;var script=document.createElement("script");script.src=this.jsRunSequence[0].path;script.type="text/javascript";this.jsRunSequence[0].status="loading";script.onload=function(){that.jsRunSequence.shift();if(that.jsRunSequence.length>0){that.runjs()}};document.body.appendChild(script)}};lsloader.tagLoad=function(path,name){this.jsRunSequence.push({name:name,code:"",path:path,status:"failed"});this.runjs()};lsloader.jsfallback=function(path,name){if(!!this.jsnamemap[name]){return}else{this.jsnamemap[name]=name}for(var k in this.jsRunSequence){if(this.jsRunSequence[k].name==name){this.jsRunSequence[k].code="";this.jsRunSequence[k].status="failed";this.jsRunSequence[k].path=path}}this.runjs()};lsloader.cssfallback=function(path,name,cssonload){if(!!this.cssnamemap[name]){return}else{this.cssnamemap[name]=1}var link=document.createElement("link");link.type="text/css";link.href=path;link.rel="stylesheet";link.onload=link.onerror=cssonload;var root=document.getElementsByTagName("script")[0];root.parentNode.insertBefore(link,root)};lsloader.runInlineScript=function(scriptId,codeId){var code=document.getElementById(codeId).innerText;this.jsRunSequence.push({name:scriptId,code:code});this.runjs()};lsloader.loadCombo=function(jslist){var updateList="";var requestingModules={};for(var k in jslist){var LS=this.getLS(jslist[k].name);if(!!LS){var version=LS.split(versionString)[0];var code=LS.split(versionString)[1]}else{var version=""}if(version==jslist[k].path){this.jsRunSequence.push({name:jslist[k].name,code:code,path:jslist[k].path})}else{this.jsRunSequence.push({name:jslist[k].name,code:null,path:jslist[k].path,status:"comboloading"});requestingModules[jslist[k].name]=true;updateList+=(updateList==""?"":";")+jslist[k].path}}var that=this;if(!!updateList){var xhr=new XMLHttpRequest;xhr.open("get",combo+updateList,true);xhr.onreadystatechange=function(){if(xhr.readyState==4){if(xhr.status>=200&&xhr.status<300||xhr.status==304){if(xhr.response!=""){that.runCombo(xhr.response,requestingModules);return}}else{for(var i in that.jsRunSequence){if(requestingModules[that.jsRunSequence[i].name]){that.jsRunSequence[i].status="failed"}}that.runjs()}}};xhr.send(null)}this.runjs()};lsloader.runCombo=function(comboCode,requestingModules){comboCode=comboCode.split("/*combojs*/");comboCode.shift();for(var k in this.jsRunSequence){if(!!requestingModules[this.jsRunSequence[k].name]&&!!comboCode[0]){this.jsRunSequence[k].status="comboJS";this.jsRunSequence[k].code=comboCode[0];this.setLS(this.jsRunSequence[k].name,this.jsRunSequence[k].path+versionString+comboCode[0]);comboCode.shift()}}this.runjs()}})();</script>
@@ -226,26 +226,26 @@
     <!-- The Open Graph protocol -->
     <meta property="og:url" content="https://yokiqust.me">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="Hello World | Thinking &amp; Coding">
+    <meta property="og:title" content="残差网络ResNet | Thinking &amp; Coding">
     <meta property="og:image" content="https://yokiqust.me/img/favicon.png" />
-    <meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.">
-    
+    <meta property="og:description" content="深度残差学习（Deep Residual Learning）残差学习（Residual Learning）对于深度卷积神经网络来说，网络的深度对于模型训练的结果来说至关重要，特别是在图像识别领域。那么由此就产生一个问题：简单的堆积层（layer）可以使网络学习的更好吗？">
+    <meta property="og:article:tag" content="机器学习"> <meta property="og:article:tag" content="图像处理"> 
 
     
-        <meta property="article:published_time" content="Thu May 11 2017 16:51:45 GMT+0800" />
-        <meta property="article:modified_time" content="Thu May 11 2017 16:51:45 GMT+0800" />
+        <meta property="article:published_time" content="Thu Oct 19 2017 08:56:00 GMT+0800" />
+        <meta property="article:modified_time" content="Thu Oct 19 2017 20:00:32 GMT+0800" />
     
 
     <!-- The Twitter Card protocol -->
-    <meta name="twitter:title" content="Hello World | Thinking &amp; Coding">
-    <meta name="twitter:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.">
+    <meta name="twitter:title" content="残差网络ResNet | Thinking &amp; Coding">
+    <meta name="twitter:description" content="深度残差学习（Deep Residual Learning）残差学习（Residual Learning）对于深度卷积神经网络来说，网络的深度对于模型训练的结果来说至关重要，特别是在图像识别领域。那么由此就产生一个问题：简单的堆积层（layer）可以使网络学习的更好吗？">
     <meta name="twitter:image" content="https://yokiqust.me/img/favicon.png">
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://yokiqust.me" />
 
     <!-- Add canonical link for SEO -->
     
-        <link rel="canonical" href="https://yokiqust.me/2017/05/11/hello-world/index.html" />
+        <link rel="canonical" href="https://yokiqust.me/2017/10/19/残差网络ResNet/index.html" />
     
 
     <!-- Structured-data for SEO -->
@@ -257,10 +257,10 @@
 {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "mainEntityOfPage": "https://yokiqust.me/2017/05/11/hello-world/index.html",
-    "headline": "Hello World",
-    "datePublished": "Thu May 11 2017 16:51:45 GMT+0800",
-    "dateModified": "Thu May 11 2017 16:51:45 GMT+0800",
+    "mainEntityOfPage": "https://yokiqust.me/2017/10/19/残差网络ResNet/index.html",
+    "headline": "残差网络ResNet",
+    "datePublished": "Thu Oct 19 2017 08:56:00 GMT+0800",
+    "dateModified": "Thu Oct 19 2017 20:00:32 GMT+0800",
     "author": {
         "@type": "Person",
         "name": "YokiQust",
@@ -278,8 +278,8 @@
             "url": "/img/favicon.png"
         }
     },
-    "keywords": "null",
-    "description": "Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.",
+    "keywords": ",机器学习,图像处理null",
+    "description": "深度残差学习（Deep Residual Learning）残差学习（Residual Learning）对于深度卷积神经网络来说，网络的深度对于模型训练的结果来说至关重要，特别是在图像识别领域。那么由此就产生一个问题：简单的堆积层（layer）可以使网络学习的更好吗？",
 }
 </script>
 
@@ -344,7 +344,7 @@
     </button>
 
     <ul class="post-toc-wrap mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="post-toc-trigger-btn" style="max-height:80vh; overflow-y:scroll;">
-        <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Quick-Start"><span class="post-toc-number">1.</span> <span class="post-toc-text">Quick Start</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Create-a-new-post"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">Create a new post</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Run-server"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">Run server</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Generate-static-files"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">Generate static files</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Deploy-to-remote-sites"><span class="post-toc-number">1.4.</span> <span class="post-toc-text">Deploy to remote sites</span></a></li></ol></li></ol>
+        <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#深度残差学习（Deep-Residual-Learning）"><span class="post-toc-number">1.</span> <span class="post-toc-text">深度残差学习（Deep Residual Learning）</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#残差学习（Residual-Learning）"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">残差学习（Residual Learning）</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#恒等映射（Identity-Mapping）"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">恒等映射（Identity Mapping）</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#相关工作"><span class="post-toc-number">2.</span> <span class="post-toc-text">相关工作</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#残差表示（Residual-Representations）"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">残差表示（Residual Representations）</span></a></li></ol></li></ol>
     </ul>
     
 
@@ -376,7 +376,7 @@
         
     
             <p class="article-headline-p">
-                Hello World
+                残差网络ResNet
             </p>
         </div>
 
@@ -395,7 +395,7 @@
     <!-- Author Name & Date -->
     <div>
         <strong>YokiQust</strong>
-        <span>5月 11, 2017</span>
+        <span>10月 19, 2017</span>
     </div>
 
     <div class="section-spacer"></div>
@@ -413,6 +413,15 @@
 
     <!-- Tags (bookmark) -->
     
+    <button id="article-functions-viewtags-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+        <i class="material-icons" role="presentation">bookmark</i>
+        <span class="visuallyhidden">bookmark</span>
+    </button>
+    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="article-functions-viewtags-button">
+        <li class="mdl-menu__item">
+        <a class="post_tag-link" href="/tags/图像处理/">图像处理</a></li><li class="mdl-menu__item"><a class="post_tag-link" href="/tags/机器学习/">机器学习</a>
+    </ul>
+    
 
     <!-- Share -->
     
@@ -427,7 +436,7 @@
 
     <!-- Share Weibo -->
     
-        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=Hello World&url=https://yokiqust.me/2017/05/11/hello-world/index.html&pic=https://yokiqust.me/img/favicon.png&searchPic=false&style=simple" target="_blank">
+        <a class="post_share-link" href="http://service.weibo.com/share/share.php?appkey=&title=残差网络ResNet&url=https://yokiqust.me/2017/10/19/残差网络ResNet/index.html&pic=https://yokiqust.me/img/favicon.png&searchPic=false&style=simple" target="_blank">
             <li class="mdl-menu__item">
                 分享到微博
             </li>
@@ -436,7 +445,7 @@
 
     <!-- Share Twitter -->
     
-        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=Hello World&url=https://yokiqust.me/2017/05/11/hello-world/index.html&via=YokiQust" target="_blank">
+        <a class="post_share-link" href="https://twitter.com/intent/tweet?text=残差网络ResNet&url=https://yokiqust.me/2017/10/19/残差网络ResNet/index.html&via=YokiQust" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Twitter
             </li>
@@ -445,7 +454,7 @@
 
     <!-- Share Facebook -->
     
-        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=https://yokiqust.me/2017/05/11/hello-world/index.html" target="_blank">
+        <a class="post_share-link" href="https://www.facebook.com/sharer/sharer.php?u=https://yokiqust.me/2017/10/19/残差网络ResNet/index.html" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Facebook
             </li>
@@ -454,7 +463,7 @@
 
     <!-- Share Google+ -->
     
-        <a class="post_share-link" href="https://plus.google.com/share?url=https://yokiqust.me/2017/05/11/hello-world/index.html" target="_blank">
+        <a class="post_share-link" href="https://plus.google.com/share?url=https://yokiqust.me/2017/10/19/残差网络ResNet/index.html" target="_blank">
             <li class="mdl-menu__item">
                 分享到 Google+
             </li>
@@ -466,7 +475,7 @@
 
     <!-- Share QQ -->
     
-        <a class="post_share-link" href="http://connect.qq.com/widget/shareqq/index.html?site=Thinking &amp; Coding&title=Hello World&summary=Machine Learning&pics=https://yokiqust.me/img/favicon.png&url=https://yokiqust.me/2017/05/11/hello-world/index.html" target="_blank">
+        <a class="post_share-link" href="http://connect.qq.com/widget/shareqq/index.html?site=Thinking &amp; Coding&title=残差网络ResNet&summary=Machine Learning&pics=https://yokiqust.me/img/favicon.png&url=https://yokiqust.me/2017/10/19/残差网络ResNet/index.html" target="_blank">
             <li class="mdl-menu__item">
                 分享到 QQ
             </li>
@@ -485,16 +494,9 @@
                 <!-- Post Content -->
                 <div id="post-content" class="mdl-color-text--grey-700 mdl-card__supporting-text fade out">
     
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<a id="more"></a>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+        <h1 id="深度残差学习（Deep-Residual-Learning）"><a href="#深度残差学习（Deep-Residual-Learning）" class="headerlink" title="深度残差学习（Deep Residual Learning）"></a>深度残差学习（Deep Residual Learning）</h1><h2 id="残差学习（Residual-Learning）"><a href="#残差学习（Residual-Learning）" class="headerlink" title="残差学习（Residual Learning）"></a>残差学习（Residual Learning）</h2><p>对于深度卷积神经网络来说，网络的深度对于模型训练的结果来说至关重要，特别是在图像识别领域。那么由此就产生一个问题：简单的堆积层（layer）可以使网络学习的更好吗？<br><a id="more"></a><br>当一个更深的网络能够开始收敛（converging）时，就会暴露一个退化（degradation）问题：随着网络深度的增加，网络的精度会达到饱和，然后精度就会急速降低。而且，这种退化不是由过拟合（overfitting）引起的，继续向一个适当层数的网络中添加层就会导致更高的训练错误，如下图所示。（为什么？）<br><img src="/2017/10/19/残差网络ResNet/1.png" alt="1.png" title=""><br>训练精度的退化表明不是所有系统都是那么容易优化的。而深度参差学习（deep residual learning）框架可以解决这个退化问题。<br>ResNet通过恒等映射（identity mapping）将一个深层网络退化为一个浅层网络，从而获得更高的训练精度。如果假设多层非线性层（nonlinear layers）可以渐进的拟合复杂函数，这就相当于假设多层非线性层就可以渐进的拟合残差函数（residual function）。从<em>学习恒等映射</em>这点来看，期望映射是H(x)，残差映射为F(x)，其中x为网络第一层的输入，此时F(x)=H(x)-x，则期望输出H(x)=F(x)-x。当F(x)=0时，此时的网络就会退化为一个浅层网络，提高了训练的精度，同时，在极端情况下，当恒等映射达到最优时，网络学习F(x)=0比直接学习F(x)=x要简单很多。从<em>学习残差映射</em>这点来说，根据H(x)=F(x)+x，引入残差之后的映射对输出的变化更加敏感，因为恒等映射将输出的相同部分去掉了，由残差映射F(x)表示变化的部分，而灵敏度大则更利于反向传播时对参数的调整。一个残差学习模块如下：<br><img src="/2017/10/19/残差网络ResNet/2.png" alt="2.png" title=""><br>可以看到恒等映射既没有添加额外的参数，也没有增加计算的复杂度。  </p>
+<h2 id="恒等映射（Identity-Mapping）"><a href="#恒等映射（Identity-Mapping）" class="headerlink" title="恒等映射（Identity Mapping）"></a>恒等映射（Identity Mapping）</h2><p>我们将一个构造模块的定义如下：<br><img src="/2017/10/19/残差网络ResNet/3.png" alt="3.png" title=""><br>其中x,y分别表示输入、输出向量。函数F表示要学习的残差映射。F+x的操作被一个快捷连接（shortcut connection）和一个矩阵加法执行。<br>式中x与F必须有相同的维度，如果没有的话，我们可以通过在快接连接上执行一个线性投影（linear projection）Ws来匹配维度：<br><img src="/2017/10/19/残差网络ResNet/4.png" alt="4.png" title=""><br>在实验中已经验证恒等映射足够解决退化问题，所以线性投影只用来匹配维度。<br>在卷积操作中，F+x的操作是作用在两个特征图之间，而且是对应通道间。</p>
+<h1 id="相关工作"><a href="#相关工作" class="headerlink" title="相关工作"></a>相关工作</h1><h2 id="残差表示（Residual-Representations）"><a href="#残差表示（Residual-Representations）" class="headerlink" title="残差表示（Residual Representations）"></a>残差表示（Residual Representations）</h2><p>在图像识别领域，VLAD是一种用残差向量（residual vectors）对字典(dictionary)进行编码的表示方法。Fisher Vector可以被看做是VLAD的概率版本。这两种算法在图像检索和分类领域都是强有力的浅层表示方法。对于向量量化，编码残差向量比编码原向量更加高效。（未完）</p>
 
         
     
@@ -527,19 +529,19 @@
             <nav class="material-nav mdl-color-text--grey-50 mdl-cell mdl-cell--12-col">
     <!-- Prev Nav -->
     
-        <a href="/2017/10/12/DehazeNet及其他/" id="post_nav-newer" class="prev-content">
-            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
-                <i class="material-icons">arrow_back</i>
-            </button>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            新篇
-        </a>
-    
 
     <!-- Section Spacer -->
     <div class="section-spacer"></div>
 
     <!-- Next Nav -->
+    
+        <a href="/2017/10/12/DehazeNet及其他/" id="post_nav-older" class="next-content">
+            旧篇
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-color--white mdl-color-text--grey-900" role="presentation">
+                <i class="material-icons">arrow_forward</i>
+            </button>
+        </a>
     
 </nav>
 
