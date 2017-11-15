@@ -3,6 +3,37 @@
   
     
     <entry>
+      <title><![CDATA[数据预处理与TFRecord]]></title>
+      <url>/2017/11/14/DataSet/</url>
+      <content type="html"><![CDATA[<p>这篇文章主要说一下TF的数据处理部分。<br><a id="more"></a></p>
+<h1 id="数据导入及预处理"><a href="#数据导入及预处理" class="headerlink" title="数据导入及预处理"></a>数据导入及预处理</h1><h2 id="tf-gfile-FastGFile"><a href="#tf-gfile-FastGFile" class="headerlink" title="tf.gfile.FastGFile"></a>tf.gfile.FastGFile</h2><p>首先说一下TF提供的文件处理API， <strong>tf.gfile.FastGFile</strong><br>这个类对Python的文件I/O进行了封装，同时没有thread locking。<br>因为此类提供了 <em>__enter__()</em>  与 <em>__exit__()</em> 两个方法，所以可以与 <strong>with</strong> 关键字一起使用。<br>&nbsp;&nbsp;&nbsp;&nbsp;<em>read(n=-1)</em>：将文件作为字符串返回，从当前行开始读取。<br>&nbsp;&nbsp;&nbsp;&nbsp;<em>readline()</em>：读取下一行。<br>&nbsp;&nbsp;&nbsp;&nbsp;<em>readlines()</em>：将所有行作为List返回。<br>&nbsp;&nbsp;&nbsp;&nbsp;<em>write(file_content)</em>：将内容 <strong>追加</strong> 到文件中。</p>
+<h2 id="tf-train-Coordinator"><a href="#tf-train-Coordinator" class="headerlink" title="tf.train.Coordinator"></a>tf.train.Coordinator</h2><p>因为要处理大量数据，所以一般使用多线程进行操作，TF同样提供了工具用于线程管理。<br><strong>tf.train.Coordinator</strong> 用来使多个线程同时停止，同时发生异常时向一个可以让其停止的程序报告。<br>其重要方法：<br>&nbsp;&nbsp;&nbsp;&nbsp;<em>tf.train.Coordinator.should_stop</em>：当线程应该被停止时，返回 <strong>True</strong> 。<br>&nbsp;&nbsp;&nbsp;&nbsp;<em>tf.train.Coordinator.request_stop</em>：当线程应该被停止时，请求停止。<br>&nbsp;&nbsp;&nbsp;&nbsp;<em>tf.train.Coordinator.join</em>：等待，直到指定线程停止。<br>我们首先创建一个 <strong>Coordinator</strong> 对象，然后创建一系列线程。这些线程会一直运行直到 <strong>shoud_stop()</strong> 方法返回 <strong>True</strong> 。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Using Python's threading library.</span></div><div class="line"><span class="keyword">import</span> threading</div><div class="line"></div><div class="line"><span class="comment"># Thread body: loop until the coordinator indicates a stop was requested.</span></div><div class="line"><span class="comment"># If some condition becomes true, ask the coordinator to stop.</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">MyLoop</span><span class="params">(coord)</span>:</span></div><div class="line">  <span class="keyword">while</span> <span class="keyword">not</span> coord.should_stop():</div><div class="line">    ...do something...</div><div class="line">    <span class="keyword">if</span> ...some condition...:</div><div class="line">      coord.request_stop()</div><div class="line"></div><div class="line"><span class="comment"># Main thread: create a coordinator.</span></div><div class="line">coord = tf.train.Coordinator()</div><div class="line"></div><div class="line"><span class="comment"># Create 10 threads that run 'MyLoop()'</span></div><div class="line">threads = [threading.Thread(target=MyLoop, args=(coord,)) <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">10</span>)]</div><div class="line"></div><div class="line"><span class="comment"># Start the threads and wait for all of them to stop.</span></div><div class="line"><span class="keyword">for</span> t <span class="keyword">in</span> threads:</div><div class="line">  t.start()</div><div class="line">coord.join(threads)</div></pre></td></tr></table></figure><br>当线程中抛出异常时，<strong>Coordinator</strong> 可以在将其继续抛出。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span>:</div><div class="line">  <span class="keyword">while</span> <span class="keyword">not</span> coord.should_stop():</div><div class="line">    ...do some work...</div><div class="line"><span class="keyword">except</span> Exception <span class="keyword">as</span> e:</div><div class="line">  coord.request_stop(e)</div></pre></td></tr></table></figure><br>为了简化代码可以写为：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">with</span> coord.stop_on_exception():</div><div class="line">  <span class="keyword">while</span> <span class="keyword">not</span> coord.should_stop():</div><div class="line">    ...do some work...</div></pre></td></tr></table></figure><br>使用 <strong>stop_on_exception()</strong> 方法可以在异常抛出时，自动停止线程。<br><strong>join(threads=None,stop_grace_period_secs=120,ignore_live_threads=False)</strong>：该方法将会阻塞直到所有线程结束。所有输入的线程将会被 <strong>Coordinator</strong> 使用 <strong>Coordinator.register_thread()</strong> 方法注册。</p>
+<h2 id="TFRecord与Example"><a href="#TFRecord与Example" class="headerlink" title="TFRecord与Example"></a>TFRecord与Example</h2><p>在说数据写入之前，先说一下 <strong>TFRecord</strong> 。<br><strong>TFRecord</strong> 数据文件是一种将图像数据与标签统一存储的二进制文件，能更好的利用内存，能够在TF中快速复制，移动，读取，存储等。可以在 <strong>TFRecord</strong> 中直接存储 <em><strong>tf.trian.Example</strong></em>  。对于 <strong>TFRecord</strong> 文件的写入操作可以直接使用 <strong>tf.python_io.TFRecordWriter</strong> 中的 <em>write()</em> 方法完成。<br><strong>Example</strong> 是用来描述输入数据的协议信息。</p>
+<h1 id="相关内容"><a href="#相关内容" class="headerlink" title="相关内容"></a>相关内容</h1><h2 id="threading-Thread"><a href="#threading-Thread" class="headerlink" title="threading.Thread"></a>threading.Thread</h2><p>这个类代表被单个线程控制的活动。有两种方式指定活动：通过向构造器中传递一个可调用的对象，或者在其子类中重写 <strong>run()</strong> 方法。<br>当一个 <strong>Thread</strong> 对象被创建后，这个活动将会开始当这个线程的 <strong>start()</strong> 方法被调用。该方法会调用 <strong>run()</strong> 方法。<br>只要该线程的活动开始，则认为该线程的状态为存活（alive）。直到 <strong>run()</strong> 方法结束，该线程都会存活，或者抛出了一个无法解决的异常。使用 <strong>is_alive()</strong> 方法可以判断线程是否还存活。<br>其他线程可调用一个线程的 <strong>join()</strong> 方法，此方法会阻塞调用的线程直到被调用线程结束。</p>
+<h2 id="Protocol-Buffer"><a href="#Protocol-Buffer" class="headerlink" title="Protocol Buffer"></a>Protocol Buffer</h2><p><strong>Protocol Buffer</strong> 可以灵活，高效的解决文件序列化以及恢复问题。要使用 <strong>Protocol Buffer</strong> 首先要写一个 <em>.proto</em> 文件，来描述我们想存储的数据结构。根据此文件，<strong>Protocol Buffer</strong> 编译器会创建一个类，来实现自动编码以及从二进制文件中解析数据。</p>
+<h3 id="创建-proto-文件"><a href="#创建-proto-文件" class="headerlink" title="创建 .proto 文件"></a>创建 <em>.proto</em> 文件</h3><p>对于每个想要序列化的数据结构为其向 <em>.proto</em> 文件中一个 <em>message</em> ，对信息中的每个字段指明其名字和类型。下面是一个通讯簿的 <em>.proto</em> 文件示例：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">syntax = <span class="string">"proto2"</span>;</div><div class="line"></div><div class="line">package tutorial;</div><div class="line"></div><div class="line">message Person &#123;</div><div class="line">  required <span class="built_in">string</span> name = <span class="number">1</span>;</div><div class="line">  required int32 id = <span class="number">2</span>;</div><div class="line">  optional <span class="built_in">string</span> email = <span class="number">3</span>;</div><div class="line"></div><div class="line">  <span class="keyword">enum</span> PhoneType &#123;</div><div class="line">    MOBILE = <span class="number">0</span>;</div><div class="line">    HOME = <span class="number">1</span>;</div><div class="line">    WORK = <span class="number">2</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  message PhoneNumber &#123;</div><div class="line">    required <span class="built_in">string</span> number = <span class="number">1</span>;</div><div class="line">    optional PhoneType type = <span class="number">2</span> [<span class="keyword">default</span> = HOME];</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  repeated PhoneNumber phones = <span class="number">4</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line">message AddressBook &#123;</div><div class="line">  repeated Person people = <span class="number">1</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure><br><em>.proto</em> 文件从包声明开始，为了解决命名冲突问题。<br>一个 <em>message</em> 只是将一系列有类型的字段聚合在一起。</p>
+]]></content>
+      
+        <categories>
+            
+            <category> TensorFlow </category>
+            
+            <category> Python </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> TensorFlow </tag>
+            
+            <tag> Python </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[TensorFlow Estimator简介]]></title>
       <url>/2017/11/06/TensorFlow-Estimator/</url>
       <content type="html"><![CDATA[<p>这篇文章主要是简单介绍TensorFlow的高阶API–Estimator，使用此API可以很大程度上简化机器学习的编程工作。<br><a id="more"></a></p>
@@ -209,14 +240,14 @@
     </entry>
     
     <entry>
-      <title><![CDATA[links]]></title>
-      <url>/links/index.html</url>
+      <title><![CDATA[tags]]></title>
+      <url>/tags/index.html</url>
       <content type="html"></content>
     </entry>
     
     <entry>
-      <title><![CDATA[tags]]></title>
-      <url>/tags/index.html</url>
+      <title><![CDATA[links]]></title>
+      <url>/links/index.html</url>
       <content type="html"></content>
     </entry>
     

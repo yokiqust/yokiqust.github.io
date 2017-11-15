@@ -1,0 +1,532 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>数据预处理与TFRecord | Thinking &amp; Coding</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="YokiQust">
+    
+
+    
+    <meta name="description" content="这篇文章主要说一下TF的数据处理部分。">
+<meta name="keywords" content="TensorFlow,Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据预处理与TFRecord">
+<meta property="og:url" content="https://yokiqust.me/2017/11/14/DataSet/index.html">
+<meta property="og:site_name" content="Thinking &amp; Coding">
+<meta property="og:description" content="这篇文章主要说一下TF的数据处理部分。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-11-15T13:44:21.967Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据预处理与TFRecord">
+<meta name="twitter:description" content="这篇文章主要说一下TF的数据处理部分。">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Thinking &amp; Coding" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Thinking &amp; Coding" title="Thinking &amp; Coding"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Thinking &amp; Coding">Thinking &amp; Coding</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:yokiqust.me">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/11/14/DataSet/" title="数据预处理与TFRecord" itemprop="url">数据预处理与TFRecord</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="YokiQust" target="_blank" itemprop="author">YokiQust</a>
+		
+  <p class="article-time">
+    <time datetime="2017-11-14T11:21:18.000Z" itemprop="datePublished"> 发表于 2017-11-14</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#数据导入及预处理"><span class="toc-number">1.</span> <span class="toc-text">数据导入及预处理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#tf-gfile-FastGFile"><span class="toc-number">1.1.</span> <span class="toc-text">tf.gfile.FastGFile</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#tf-train-Coordinator"><span class="toc-number">1.2.</span> <span class="toc-text">tf.train.Coordinator</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TFRecord与Example"><span class="toc-number">1.3.</span> <span class="toc-text">TFRecord与Example</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#相关内容"><span class="toc-number">2.</span> <span class="toc-text">相关内容</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#threading-Thread"><span class="toc-number">2.1.</span> <span class="toc-text">threading.Thread</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Protocol-Buffer"><span class="toc-number">2.2.</span> <span class="toc-text">Protocol Buffer</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#创建-proto-文件"><span class="toc-number">2.2.1.</span> <span class="toc-text">创建 .proto 文件</span></a></li></ol></li></ol></li></ol>
+		
+		</div>
+		
+		<p>这篇文章主要说一下TF的数据处理部分。<br><a id="more"></a></p>
+<h1 id="数据导入及预处理"><a href="#数据导入及预处理" class="headerlink" title="数据导入及预处理"></a>数据导入及预处理</h1><h2 id="tf-gfile-FastGFile"><a href="#tf-gfile-FastGFile" class="headerlink" title="tf.gfile.FastGFile"></a>tf.gfile.FastGFile</h2><p>首先说一下TF提供的文件处理API， <strong>tf.gfile.FastGFile</strong><br>这个类对Python的文件I/O进行了封装，同时没有thread locking。<br>因为此类提供了 <em>__enter__()</em>  与 <em>__exit__()</em> 两个方法，所以可以与 <strong>with</strong> 关键字一起使用。<br>&nbsp;&nbsp;&nbsp;&nbsp;<em>read(n=-1)</em>：将文件作为字符串返回，从当前行开始读取。<br>&nbsp;&nbsp;&nbsp;&nbsp;<em>readline()</em>：读取下一行。<br>&nbsp;&nbsp;&nbsp;&nbsp;<em>readlines()</em>：将所有行作为List返回。<br>&nbsp;&nbsp;&nbsp;&nbsp;<em>write(file_content)</em>：将内容 <strong>追加</strong> 到文件中。</p>
+<h2 id="tf-train-Coordinator"><a href="#tf-train-Coordinator" class="headerlink" title="tf.train.Coordinator"></a>tf.train.Coordinator</h2><p>因为要处理大量数据，所以一般使用多线程进行操作，TF同样提供了工具用于线程管理。<br><strong>tf.train.Coordinator</strong> 用来使多个线程同时停止，同时发生异常时向一个可以让其停止的程序报告。<br>其重要方法：<br>&nbsp;&nbsp;&nbsp;&nbsp;<em>tf.train.Coordinator.should_stop</em>：当线程应该被停止时，返回 <strong>True</strong> 。<br>&nbsp;&nbsp;&nbsp;&nbsp;<em>tf.train.Coordinator.request_stop</em>：当线程应该被停止时，请求停止。<br>&nbsp;&nbsp;&nbsp;&nbsp;<em>tf.train.Coordinator.join</em>：等待，直到指定线程停止。<br>我们首先创建一个 <strong>Coordinator</strong> 对象，然后创建一系列线程。这些线程会一直运行直到 <strong>shoud_stop()</strong> 方法返回 <strong>True</strong> 。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Using Python's threading library.</span></div><div class="line"><span class="keyword">import</span> threading</div><div class="line"></div><div class="line"><span class="comment"># Thread body: loop until the coordinator indicates a stop was requested.</span></div><div class="line"><span class="comment"># If some condition becomes true, ask the coordinator to stop.</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">MyLoop</span><span class="params">(coord)</span>:</span></div><div class="line">  <span class="keyword">while</span> <span class="keyword">not</span> coord.should_stop():</div><div class="line">    ...do something...</div><div class="line">    <span class="keyword">if</span> ...some condition...:</div><div class="line">      coord.request_stop()</div><div class="line"></div><div class="line"><span class="comment"># Main thread: create a coordinator.</span></div><div class="line">coord = tf.train.Coordinator()</div><div class="line"></div><div class="line"><span class="comment"># Create 10 threads that run 'MyLoop()'</span></div><div class="line">threads = [threading.Thread(target=MyLoop, args=(coord,)) <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">10</span>)]</div><div class="line"></div><div class="line"><span class="comment"># Start the threads and wait for all of them to stop.</span></div><div class="line"><span class="keyword">for</span> t <span class="keyword">in</span> threads:</div><div class="line">  t.start()</div><div class="line">coord.join(threads)</div></pre></td></tr></table></figure><br>当线程中抛出异常时，<strong>Coordinator</strong> 可以在将其继续抛出。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span>:</div><div class="line">  <span class="keyword">while</span> <span class="keyword">not</span> coord.should_stop():</div><div class="line">    ...do some work...</div><div class="line"><span class="keyword">except</span> Exception <span class="keyword">as</span> e:</div><div class="line">  coord.request_stop(e)</div></pre></td></tr></table></figure><br>为了简化代码可以写为：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">with</span> coord.stop_on_exception():</div><div class="line">  <span class="keyword">while</span> <span class="keyword">not</span> coord.should_stop():</div><div class="line">    ...do some work...</div></pre></td></tr></table></figure><br>使用 <strong>stop_on_exception()</strong> 方法可以在异常抛出时，自动停止线程。<br><strong>join(threads=None,stop_grace_period_secs=120,ignore_live_threads=False)</strong>：该方法将会阻塞直到所有线程结束。所有输入的线程将会被 <strong>Coordinator</strong> 使用 <strong>Coordinator.register_thread()</strong> 方法注册。</p>
+<h2 id="TFRecord与Example"><a href="#TFRecord与Example" class="headerlink" title="TFRecord与Example"></a>TFRecord与Example</h2><p>在说数据写入之前，先说一下 <strong>TFRecord</strong> 。<br><strong>TFRecord</strong> 数据文件是一种将图像数据与标签统一存储的二进制文件，能更好的利用内存，能够在TF中快速复制，移动，读取，存储等。可以在 <strong>TFRecord</strong> 中直接存储 <em><strong>tf.trian.Example</strong></em>  。对于 <strong>TFRecord</strong> 文件的写入操作可以直接使用 <strong>tf.python_io.TFRecordWriter</strong> 中的 <em>write()</em> 方法完成。<br><strong>Example</strong> 是用来描述输入数据的协议信息。</p>
+<h1 id="相关内容"><a href="#相关内容" class="headerlink" title="相关内容"></a>相关内容</h1><h2 id="threading-Thread"><a href="#threading-Thread" class="headerlink" title="threading.Thread"></a>threading.Thread</h2><p>这个类代表被单个线程控制的活动。有两种方式指定活动：通过向构造器中传递一个可调用的对象，或者在其子类中重写 <strong>run()</strong> 方法。<br>当一个 <strong>Thread</strong> 对象被创建后，这个活动将会开始当这个线程的 <strong>start()</strong> 方法被调用。该方法会调用 <strong>run()</strong> 方法。<br>只要该线程的活动开始，则认为该线程的状态为存活（alive）。直到 <strong>run()</strong> 方法结束，该线程都会存活，或者抛出了一个无法解决的异常。使用 <strong>is_alive()</strong> 方法可以判断线程是否还存活。<br>其他线程可调用一个线程的 <strong>join()</strong> 方法，此方法会阻塞调用的线程直到被调用线程结束。</p>
+<h2 id="Protocol-Buffer"><a href="#Protocol-Buffer" class="headerlink" title="Protocol Buffer"></a>Protocol Buffer</h2><p><strong>Protocol Buffer</strong> 可以灵活，高效的解决文件序列化以及恢复问题。要使用 <strong>Protocol Buffer</strong> 首先要写一个 <em>.proto</em> 文件，来描述我们想存储的数据结构。根据此文件，<strong>Protocol Buffer</strong> 编译器会创建一个类，来实现自动编码以及从二进制文件中解析数据。</p>
+<h3 id="创建-proto-文件"><a href="#创建-proto-文件" class="headerlink" title="创建 .proto 文件"></a>创建 <em>.proto</em> 文件</h3><p>对于每个想要序列化的数据结构为其向 <em>.proto</em> 文件中一个 <em>message</em> ，对信息中的每个字段指明其名字和类型。下面是一个通讯簿的 <em>.proto</em> 文件示例：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">syntax = <span class="string">"proto2"</span>;</div><div class="line"></div><div class="line">package tutorial;</div><div class="line"></div><div class="line">message Person &#123;</div><div class="line">  required <span class="built_in">string</span> name = <span class="number">1</span>;</div><div class="line">  required int32 id = <span class="number">2</span>;</div><div class="line">  optional <span class="built_in">string</span> email = <span class="number">3</span>;</div><div class="line"></div><div class="line">  <span class="keyword">enum</span> PhoneType &#123;</div><div class="line">    MOBILE = <span class="number">0</span>;</div><div class="line">    HOME = <span class="number">1</span>;</div><div class="line">    WORK = <span class="number">2</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  message PhoneNumber &#123;</div><div class="line">    required <span class="built_in">string</span> number = <span class="number">1</span>;</div><div class="line">    optional PhoneType type = <span class="number">2</span> [<span class="keyword">default</span> = HOME];</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  repeated PhoneNumber phones = <span class="number">4</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line">message AddressBook &#123;</div><div class="line">  repeated Person people = <span class="number">1</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure><br><em>.proto</em> 文件从包声明开始，为了解决命名冲突问题。<br>一个 <em>message</em> 只是将一系列有类型的字段聚合在一起。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/TensorFlow/">TensorFlow</a>►<a class="article-category-link" href="/categories/TensorFlow/Python/">Python</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/TensorFlow/">TensorFlow</a><a href="/tags/Python/">Python</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	<div class="share-jiathis">
+	  
+<div class="jiathis_style_24x24">
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_googleplus"></a>
+	<a class="jiathis_button_douban"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+    var jiathis_config={
+    data_track_clickback:true,
+    sm:"copy,renren,cqq",
+    pic:"",
+    summary:"",
+    
+  </script> 
+<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=
+2146407" charset="utf-8"></script>      
+
+	 </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2017/11/06/TensorFlow-Estimator/"  title="TensorFlow Estimator简介">
+ <strong>下一篇：</strong><br/> 
+ <span>TensorFlow Estimator简介
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+	<section id="comments" class="comment">
+	<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2146407"></script>
+<!-- UY END -->
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#数据导入及预处理"><span class="toc-number">1.</span> <span class="toc-text">数据导入及预处理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#tf-gfile-FastGFile"><span class="toc-number">1.1.</span> <span class="toc-text">tf.gfile.FastGFile</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#tf-train-Coordinator"><span class="toc-number">1.2.</span> <span class="toc-text">tf.train.Coordinator</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TFRecord与Example"><span class="toc-number">1.3.</span> <span class="toc-text">TFRecord与Example</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#相关内容"><span class="toc-number">2.</span> <span class="toc-text">相关内容</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#threading-Thread"><span class="toc-number">2.1.</span> <span class="toc-text">threading.Thread</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Protocol-Buffer"><span class="toc-number">2.2.</span> <span class="toc-text">Protocol Buffer</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#创建-proto-文件"><span class="toc-number">2.2.1.</span> <span class="toc-text">创建 .proto 文件</span></a></li></ol></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="yokiqust" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/TensorFlow/Python/" title="Python">Python<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/TensorFlow/" title="TensorFlow">TensorFlow<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/机器学习/TensorFlow/" title="TensorFlow">TensorFlow<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/机器学习/深度学习/卷积神经网络/" title="卷积神经网络">卷积神经网络<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/机器学习/" title="机器学习">机器学习<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/机器学习/深度学习/" title="深度学习">深度学习<sup>2</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/机器学习/" title="机器学习">机器学习<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/图像处理/" title="图像处理">图像处理<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/TensorFlow/" title="TensorFlow">TensorFlow<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Estimator/" title="Estimator">Estimator<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/CNN/" title="CNN">CNN<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://sumihui.github.io" target="_blank" title="墨虺の博客">墨虺の博客</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">新浪微博</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=null&verifier=b3593ceb&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Keep Thinking <br/>
+			Keep Coding</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/5486245007" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/yokiqust" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/yokiqust" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:yokiqust@qq.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="YokiQust">YokiQust</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
